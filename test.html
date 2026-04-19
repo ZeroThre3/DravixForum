@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRAVIXWEB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0a0505;
+            color: #e0d0d0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Шапка */
+        .header {
+            background: #0c0707;
+            border-bottom: 2px solid #8b0000;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff3a3a, #8b0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav {
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            color: #ccaaaa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav a:hover, .nav a.active {
+            color: #ff4444;
+        }
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #1a0e0e;
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid #5a1a1a;
+        }
+        .balance {
+            background: #2a1010;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: #ff6666;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: #8b0000;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .login-btn {
+            background: #8b0000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Модалки */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #120a0a;
+            border-radius: 28px;
+            padding: 28px;
+            width: 90%;
+            max-width: 450px;
+            border: 2px solid #8b0000;
+        }
+        .modal-content input, .modal-content textarea, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            background: #1f1111;
+            border: 1px solid #5a1a1a;
+            border-radius: 16px;
+            color: white;
+            margin: 10px 0;
+        }
+        .submit-btn {
+            background: #8b0000;
+            width: 100%;
+            padding: 12px;
+            border-radius: 40px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .close-modal {
+            background: #2a1515;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            color: #ffaaaa;
+            cursor: pointer;
+        }
+
+        /* Форум */
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #0f0808;
+            border: 1px solid #5a1a1a;
+            border-radius: 20px;
+            padding: 16px 28px;
+            text-align: center;
+            flex: 1;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ff4444;
+        }
+        .new-topic-btn {
+            background: linear-gradient(95deg, #8b0000, #cc0000);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+        .topics-list {
+            background: #0f0808;
+            border-radius: 24px;
+            border: 1px solid #5a1a1a;
+            overflow: hidden;
+        }
+        .topic-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #2a1515;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .topic-item:hover {
+            background: #1c0d0d;
+        }
+        .topic-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffaaaa;
+        }
+        .topic-meta {
+            font-size: 12px;
+            color: #aa7777;
+        }
+        .topic-replies {
+            color: #ff8888;
+        }
+
+        /* Сообщения */
+        .topic-view {
+            background: #0f0808;
+            border-radius: 24px;
+            border: 1px solid #5a1a1a;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .message {
+            background: #120a0a;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border-left: 4px solid #cc0000;
+        }
+        .message-author {
+            font-weight: bold;
+            color: #ff6666;
+        }
+        .reply-form textarea {
+            width: 100%;
+            background: #1f1111;
+            border: 1px solid #5a1a1a;
+            border-radius: 20px;
+            padding: 14px;
+            color: white;
+        }
+        .reply-btn {
+            background: #8b0000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .back-btn {
+            background: #1a0e0e;
+            border: 1px solid #5a1a1a;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #ffaaaa;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        /* Личные сообщения */
+        .pm-list {
+            background: #0f0808;
+            border-radius: 24px;
+            border: 1px solid #5a1a1a;
+            padding: 20px;
+        }
+        .pm-item {
+            padding: 12px;
+            border-bottom: 1px solid #2a1515;
+        }
+        .admin-badge {
+            background: #8b0000;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        .moder-badge {
+            background: #aa5500;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #aa6666;
+            border-top: 1px solid #2a1515;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="logo">
+                <h1>DRAVIX FORUM</h1>
+            </div>
+            <div class="nav">
+                <a class="active" data-page="forum">Форум</a>
+                <a data-page="profile">Профиль</a>
+                <a data-page="pm">Личные сообщения</a>
+                <a data-page="users">Пользователи</a>
+            </div>
+            <div id="authPanel" class="user-panel"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="app">
+    <div id="forumPage">
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-number" id="topicsCount">0</div><div class="stat-label">Тем</div></div>
+            <div class="stat-card"><div class="stat-number" id="postsCount">0</div><div class="stat-label">Сообщений</div></div>
+            <div class="stat-card"><div class="stat-number" id="usersCount">0</div><div class="stat-label">Пользователей</div></div>
+        </div>
+        <button class="new-topic-btn" id="newTopicBtn">➕ Создать тему</button>
+        <div class="topics-list" id="topicsList"></div>
+    </div>
+
+    <div id="profilePage" style="display: none;">
+        <h2 style="color:#ff5555; margin-bottom:20px;">Профиль</h2>
+        <div style="background:#0f0808; border-radius:24px; padding:28px; max-width:500px;">
+            <div><label>Аватар (URL)</label><input type="text" id="profileAvatar" placeholder="https://..."></div>
+            <div style="margin-top:16px;"><label>Имя пользователя</label><input type="text" id="profileUsername" readonly disabled style="background:#2a1515;"></div>
+            <div style="margin-top:16px;"><label>Роль</label><input type="text" id="profileRole" readonly disabled></div>
+            <div style="margin-top:16px;"><label>О себе</label><textarea id="profileBio" rows="3"></textarea></div>
+            <div style="margin-top:16px;"><strong>Баланс:</strong> <span id="profileBalance">0</span> DC</div>
+            <button class="submit-btn" id="saveProfileBtn" style="margin-top:20px;">Сохранить</button>
+        </div>
+    </div>
+
+    <div id="pmPage" style="display: none;">
+        <h2 style="color:#ff5555; margin-bottom:20px;">Личные сообщения</h2>
+        <button class="new-topic-btn" id="newPMBtn">✉️ Новое сообщение</button>
+        <div class="pm-list" id="pmList"></div>
+    </div>
+
+    <div id="usersPage" style="display: none;">
+        <h2 style="color:#ff5555; margin-bottom:20px;">Все пользователи</h2>
+        <div class="topics-list" id="usersList"></div>
+    </div>
+
+    <div id="topicViewPage" style="display: none;">
+        <button class="back-btn" id="backToForumBtn">← Назад</button>
+        <div class="topic-view" id="topicViewContent"></div>
+    </div>
+</div>
+
+<!-- Модалка логина/регистрации -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" style="display:flex; justify-content:space-between;">
+            <span id="authModalTitle">Вход</span>
+            <button class="close-modal" id="closeAuthModal">✖</button>
+        </div>
+        <input type="text" id="authUsername" placeholder="Имя пользователя">
+        <input type="password" id="authPassword" placeholder="Пароль">
+        <button class="submit-btn" id="authSubmitBtn">Войти</button>
+        <p style="text-align:center; margin-top:12px;">
+            <a id="switchAuthMode" style="color:#ff8888; cursor:pointer;">Нет аккаунта? Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+<!-- Модалка создания темы -->
+<div id="topicModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#ff5555;">Новая тема</h3>
+        <input type="text" id="topicTitle" placeholder="Заголовок">
+        <select id="topicCategory">
+            <option>Общее</option><option>Аккаунты</option><option>Боты</option><option>Премиум</option>
+        </select>
+        <textarea id="topicContent" rows="4" placeholder="Содержание..."></textarea>
+        <button class="submit-btn" id="createTopicBtn">Создать</button>
+        <button class="close-modal" id="closeTopicModal">Отмена</button>
+    </div>
+</div>
+
+<!-- Модалка личного сообщения -->
+<div id="pmModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#ff5555;">Новое сообщение</h3>
+        <select id="pmRecipient"></select>
+        <textarea id="pmText" rows="4" placeholder="Текст сообщения..."></textarea>
+        <button class="submit-btn" id="sendPMBtn">Отправить</button>
+        <button class="close-modal" id="closePMModal">Отмена</button>
+    </div>
+</div>
+
+<script>
+    // ========== СИСТЕМА АККАУНТОВ ==========
+    let users = JSON.parse(localStorage.getItem('dravix_users')) || [];
+    let topics = JSON.parse(localStorage.getItem('dravix_topics')) || [];
+    let privateMessages = JSON.parse(localStorage.getItem('dravix_pms')) || [];
+    let currentUser = JSON.parse(localStorage.getItem('dravix_current_user')) || null;
+
+    // Инициализация админа
+    if (users.length === 0) {
+        users = [
+            { id: 1, username: "Dravix", password: btoa("123123"), role: "admin", avatar: "", bio: "Founder DravixWeb", balance: 1000000, createdAt: new Date().toISOString() },
+            { id: 2, username: "ZeroThree", password: btoa("123123"), role: "moderator", avatar: "", bio: "Moder DravixWeb", balance: 50, createdAt: new Date().toISOString() },
+            { id: 3, username: "user", password: btoa("123123"), role: "user", avatar: "", bio: "bio", balance: 0, createdAt: new Date().toISOString() }
+        ];
+        saveUsers();
+    }
+
+    if (topics.length === 0) {
+        topics = [
+            { id: 1, title: "Добро пожаловать!", category: "Общее", author: "admin", authorId: 1, createdAt: "2026-04-14", messages: [{ author: "admin", authorId: 1, text: "Добро пожаловать на форум!", date: "2026-04-14" }] }
+        ];
+        saveTopics();
+    }
+
+    function saveUsers() { localStorage.setItem('dravix_users', JSON.stringify(users)); }
+    function saveTopics() { localStorage.setItem('dravix_topics', JSON.stringify(topics)); }
+    function savePMs() { localStorage.setItem('dravix_pms', JSON.stringify(privateMessages)); }
+
+    function getNextUserId() { return users.length ? Math.max(...users.map(u => u.id)) + 1 : 1; }
+    function getNextTopicId() { return topics.length ? Math.max(...topics.map(t => t.id)) + 1 : 1; }
+
+    function hashPassword(pass) { return btoa(pass); }
+    function verifyPassword(pass, hash) { return btoa(pass) === hash; }
+
+    function register(username, password) {
+        if (users.find(u => u.username === username)) return false;
+        users.push({
+            id: getNextUserId(),
+            username: username,
+            password: hashPassword(password),
+            role: "user",
+            avatar: "",
+            bio: "",
+            balance: 100,
+            createdAt: new Date().toISOString()
+        });
+        saveUsers();
+        return true;
+    }
+
+    function login(username, password) {
+        const user = users.find(u => u.username === username);
+        if (user && verifyPassword(password, user.password)) {
+            currentUser = { ...user };
+            delete currentUser.password;
+            localStorage.setItem('dravix_current_user', JSON.stringify(currentUser));
+            return true;
+        }
+        return false;
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('dravix_current_user');
+        location.reload();
+    }
+
+    function updateUserProfile(avatar, bio) {
+        if (!currentUser) return;
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        if (userIndex !== -1) {
+            users[userIndex].avatar = avatar;
+            users[userIndex].bio = bio;
+            saveUsers();
+            currentUser = { ...users[userIndex] };
+            delete currentUser.password;
+            localStorage.setItem('dravix_current_user', JSON.stringify(currentUser));
+        }
+    }
+
+    function addTopic(title, category, content) {
+        if (!currentUser) return false;
+        topics.unshift({
+            id: getNextTopicId(),
+            title: title,
+            category: category,
+            author: currentUser.username,
+            authorId: currentUser.id,
+            createdAt: new Date().toISOString().slice(0,10),
+            messages: [{ author: currentUser.username, authorId: currentUser.id, text: content, date: new Date().toISOString().slice(0,10) }]
+        });
+        saveTopics();
+        return true;
+    }
+
+    function addReply(topicId, text) {
+        if (!currentUser) return false;
+        const topic = topics.find(t => t.id === topicId);
+        if (topic) {
+            topic.messages.push({ author: currentUser.username, authorId: currentUser.id, text: text, date: new Date().toISOString().slice(0,10) });
+            saveTopics();
+            return true;
+        }
+        return false;
+    }
+
+    function sendPM(toUsername, text) {
+        if (!currentUser) return false;
+        const recipient = users.find(u => u.username === toUsername);
+        if (!recipient) return false;
+        privateMessages.push({
+            id: Date.now(),
+            from: currentUser.username,
+            fromId: currentUser.id,
+            to: toUsername,
+            toId: recipient.id,
+            text: text,
+            date: new Date().toISOString().slice(0,10),
+            read: false
+        });
+        savePMs();
+        return true;
+    }
+
+    function getUserPMs() {
+        if (!currentUser) return [];
+        return privateMessages.filter(pm => pm.to === currentUser.username || pm.from === currentUser.username).sort((a,b) => b.id - a.id);
+    }
+
+    // ========== UI РЕНДЕРИНГ ==========
+    function renderAuthPanel() {
+        const panel = document.getElementById('authPanel');
+        if (currentUser) {
+            panel.innerHTML = `
+                <span>${currentUser.username} ${currentUser.role === 'admin' ? '👑' : currentUser.role === 'moderator' ? '🛡️' : ''}</span>
+                <div class="balance">${currentUser.balance} DC</div>
+                <button class="logout-btn" id="logoutBtn">Выйти</button>
+            `;
+            document.getElementById('logoutBtn')?.addEventListener('click', logout);
+        } else {
+            panel.innerHTML = `<button class="login-btn" id="showLoginBtn">Вход / Регистрация</button>`;
+            document.getElementById('showLoginBtn')?.addEventListener('click', () => showAuthModal());
+        }
+    }
+
+    function renderTopics() {
+        const container = document.getElementById('topicsList');
+        if (!container) return;
+        container.innerHTML = '';
+        topics.forEach(topic => {
+            const el = document.createElement('div');
+            el.className = 'topic-item';
+            el.innerHTML = `
+                <div><div class="topic-title">${escapeHtml(topic.title)}</div>
+                <div class="topic-meta">${topic.category} • ${topic.author} • ${topic.createdAt}</div></div>
+                <div class="topic-replies">💬 ${topic.messages.length-1} ответов</div>
+            `;
+            el.onclick = () => openTopic(topic.id);
+            container.appendChild(el);
+        });
+        document.getElementById('topicsCount').innerText = topics.length;
+        document.getElementById('postsCount').innerText = topics.reduce((s,t) => s + t.messages.length, 0);
+        document.getElementById('usersCount').innerText = users.length;
+    }
+
+    function openTopic(id) {
+        const topic = topics.find(t => t.id === id);
+        if (!topic) return;
+        const container = document.getElementById('topicViewContent');
+        let html = `<div style="font-size:26px; font-weight:bold;">${escapeHtml(topic.title)}</div>
+                    <div style="color:#aa7777; margin-bottom:20px;">${topic.category} • ${topic.author}</div>
+                    <div class="messages-list">`;
+        topic.messages.forEach(msg => {
+            html += `<div class="message"><div class="message-author">${escapeHtml(msg.author)} ${msg.author === 'admin' ? '<span class="admin-badge">ADMIN</span>' : ''}</div>
+                    <div>${escapeHtml(msg.text)}</div><div style="font-size:11px; color:#aa6666;">${msg.date}</div></div>`;
+        });
+        html += `</div><div class="reply-form"><textarea id="replyText" rows="3" placeholder="Ваш ответ..."></textarea>
+                <button class="reply-btn" onclick="submitReply(${id})">Ответить</button></div>`;
+        container.innerHTML = html;
+        document.getElementById('forumPage').style.display = 'none';
+        document.getElementById('profilePage').style.display = 'none';
+        document.getElementById('pmPage').style.display = 'none';
+        document.getElementById('usersPage').style.display = 'none';
+        document.getElementById('topicViewPage').style.display = 'block';
+    }
+
+    window.submitReply = function(topicId) {
+        const text = document.getElementById('replyText')?.value.trim();
+        if (!text) return showToast("Введите текст");
+        if (!currentUser) return showToast("Войдите в аккаунт");
+        if (addReply(topicId, text)) {
+            showToast("Ответ добавлен");
+            openTopic(topicId);
+            renderTopics();
+        }
+    };
+
+    function renderPMs() {
+        const container = document.getElementById('pmList');
+        const pms = getUserPMs();
+        container.innerHTML = pms.length ? '' : '<div style="padding:20px; text-align:center;">Нет сообщений</div>';
+        pms.forEach(pm => {
+            const el = document.createElement('div');
+            el.className = 'pm-item';
+            el.innerHTML = `<strong>${pm.from}</strong> → ${pm.to}<br>${escapeHtml(pm.text)}<br><small>${pm.date}</small>`;
+            container.appendChild(el);
+        });
+    }
+
+    function renderUsers() {
+        const container = document.getElementById('usersList');
+        container.innerHTML = '';
+        users.forEach(u => {
+            const el = document.createElement('div');
+            el.className = 'topic-item';
+            el.innerHTML = `<div><strong>${u.username}</strong> ${u.role === 'admin' ? '👑' : u.role === 'moderator' ? '🛡️' : ''}<br><small>Баланс: ${u.balance} DC</small></div>
+                            <button class="reply-btn" style="padding:4px 12px;" onclick="showPMToUser('${u.username}')">✉️</button>`;
+            container.appendChild(el);
+        });
+    }
+
+    window.showPMToUser = function(username) {
+        if (!currentUser) return showToast("Войдите в аккаунт");
+        document.getElementById('pmRecipient').innerHTML = `<option>${username}</option>`;
+        document.getElementById('pmModal').style.display = 'flex';
+    };
+
+    function loadProfile() {
+        if (currentUser) {
+            document.getElementById('profileUsername').value = currentUser.username;
+            document.getElementById('profileRole').value = currentUser.role;
+            document.getElementById('profileAvatar').value = currentUser.avatar || '';
+            document.getElementById('profileBio').value = currentUser.bio || '';
+            document.getElementById('profileBalance').innerText = currentUser.balance;
+        }
+    }
+
+    document.getElementById('saveProfileBtn')?.addEventListener('click', () => {
+        const avatar = document.getElementById('profileAvatar').value;
+        const bio = document.getElementById('profileBio').value;
+        updateUserProfile(avatar, bio);
+        showToast("Профиль сохранён");
+        loadProfile();
+        renderAuthPanel();
+    });
+
+    // Навигация
+    document.querySelectorAll('.nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            const page = link.getAttribute('data-page');
+            document.getElementById('forumPage').style.display = page === 'forum' ? 'block' : 'none';
+            document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
+            document.getElementById('pmPage').style.display = page === 'pm' ? 'block' : 'none';
+            document.getElementById('usersPage').style.display = page === 'users' ? 'block' : 'none';
+            document.getElementById('topicViewPage').style.display = 'none';
+            if (page === 'profile') loadProfile();
+            if (page === 'pm') renderPMs();
+            if (page === 'users') renderUsers();
+            document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+
+    // Модалки
+    function showAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    document.getElementById('closeAuthModal')?.addEventListener('click', () => document.getElementById('authModal').style.display = 'none');
+    document.getElementById('closeTopicModal')?.addEventListener('click', () => document.getElementById('topicModal').style.display = 'none');
+    document.getElementById('closePMModal')?.addEventListener('click', () => document.getElementById('pmModal').style.display = 'none');
+    document.getElementById('newTopicBtn')?.addEventListener('click', () => { if(currentUser) document.getElementById('topicModal').style.display = 'flex'; else showToast("Войдите в аккаунт"); });
+    document.getElementById('newPMBtn')?.addEventListener('click', () => { if(currentUser) { document.getElementById('pmRecipient').innerHTML = users.filter(u => u.id !== currentUser.id).map(u => `<option>${u.username}</option>`).join(''); document.getElementById('pmModal').style.display = 'flex'; } else showToast("Войдите в аккаунт"); });
+    document.getElementById('createTopicBtn')?.addEventListener('click', () => {
+        const title = document.getElementById('topicTitle').value;
+        const cat = document.getElementById('topicCategory').value;
+        const content = document.getElementById('topicContent').value;
+        if (title && content && addTopic(title, cat, content)) {
+            document.getElementById('topicModal').style.display = 'none';
+            renderTopics();
+            showToast("Тема создана");
+        } else showToast("Ошибка или не авторизован");
+    });
+    document.getElementById('sendPMBtn')?.addEventListener('click', () => {
+        const to = document.getElementById('pmRecipient').value;
+        const text = document.getElementById('pmText').value;
+        if (to && text && sendPM(to, text)) {
+            document.getElementById('pmModal').style.display = 'none';
+            document.getElementById('pmText').value = '';
+            renderPMs();
+            showToast("Сообщение отправлено");
+        } else showToast("Ошибка");
+    });
+    document.getElementById('backToForumBtn')?.addEventListener('click', () => {
+        document.getElementById('forumPage').style.display = 'block';
+        document.getElementById('topicViewPage').style.display = 'none';
+        document.getElementById('profilePage').style.display = 'none';
+        document.getElementById('pmPage').style.display = 'none';
+        document.getElementById('usersPage').style.display = 'none';
+        renderTopics();
+    });
+
+    let isLoginMode = true;
+    document.getElementById('switchAuthMode')?.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authModalTitle').innerText = isLoginMode ? "Вход" : "Регистрация";
+        document.getElementById('authSubmitBtn').innerText = isLoginMode ? "Войти" : "Зарегистрироваться";
+    });
+    document.getElementById('authSubmitBtn')?.addEventListener('click', () => {
+        const username = document.getElementById('authUsername').value;
+        const password = document.getElementById('authPassword').value;
+        if (isLoginMode) {
+            if (login(username, password)) {
+                document.getElementById('authModal').style.display = 'none';
+                location.reload();
+            } else showToast("Неверный логин или пароль");
+        } else {
+            if (register(username, password)) {
+                showToast("Регистрация успешна! Войдите.");
+                isLoginMode = true;
+                document.getElementById('authModalTitle').innerText = "Вход";
+                document.getElementById('authSubmitBtn').innerText = "Войти";
+            } else showToast("Пользователь уже существует");
+        }
+    });
+
+    function escapeHtml(str) { return str?.replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }) || ''; }
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.innerText = msg;
+        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#8b0000;color:white;padding:12px 24px;border-radius:60px;z-index:9999;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    renderAuthPanel();
+    renderTopics();
+    if (currentUser) { loadProfile(); renderPMs(); renderUsers(); }
+</script>
+<footer><div class="container">DRAVIXWEB © 2026 — Private. Secure. New!</div></footer>
+</body>
+</html>
